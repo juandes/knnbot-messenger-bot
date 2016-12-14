@@ -61,7 +61,9 @@ def webhook():
                     recipient_id = x['sender']['id']
                     if x['message'].get('text'):
                         input = x['message'].get('text')
+                        print('input: {}'.format(input))
                         t = ((int(input[0]), int(input[1])), int(input[2]))
+
                         train.append(t)
 
                         if len(train) > k + 0:
