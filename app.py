@@ -47,8 +47,8 @@ def landing():
     return 'Hi.'
 
 
-@app.route("/", methods=['POST'])
-def webhook():
+@app.route("/a", methods=['POST'])
+def webhook2():
     predictions = []
     train = []
 
@@ -63,28 +63,7 @@ def webhook():
                         input = x['message'].get('text')
                         print('input: {}'.format(input))
                         t = ((int(input[0]), int(input[1])), int(input[2]))
-
-                        train.append(t)
-
-                        if len(train) > k + 0:
-                            train_to_fit = np.array(train)
-
-                            name = raw_input(
-                                "Input to predict: ")   # Python 2.x
-                            input = name.split(',')
-                            to_predict = [(int(input[0]), int(input[1]))]
-                            to_predict = np.array(to_predict)
-
-                            # for each testing instance
-                            for x in range(len(to_predict)):
-                                neighbors = get_neighbors(
-                                    training_set=train_to_fit, test_instance=to_predict[x], k=k)
-                                majority_vote = get_majority_vote(neighbors)
-                                predictions.append(majority_vote)
-                                print 'Predicted label=' + str(majority_vote) + ', Actual label=' + str(to_predict[x])
-                        else:
-                            bot.send_text_message(
-                                recipient_id, "input accepted")
+                        bot.send_text_message(recipient_id, "input accepted")
                         #message = x['message']['text']
                         #bot.send_text_message(recipient_id, message)
                 else:
@@ -92,7 +71,7 @@ def webhook():
         return "Success"
 
 
-"""def webhook():
+def webhook():
     if request.method == 'POST':
         output = request.get_json()
         for event in output['entry']:
@@ -109,7 +88,7 @@ def webhook():
                 else:
                     pass
         return "Success"
-"""
+
 
 if __name__ == '__main__':
     app.run(debug=True)
