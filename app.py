@@ -81,6 +81,8 @@ def webhook():
                 if x.get('message'):
                     recipient_id = x['sender']['id']
                     if x['message'].get('text'):
+                        input = x['message'].get('text')
+                        print('input: {}'.format(input))
                         message = x['message']['text']
                         bot.send_text_message(recipient_id, message)
                     if x['message'].get('attachment'):
