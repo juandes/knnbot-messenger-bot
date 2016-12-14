@@ -71,6 +71,7 @@ def webhook2():
         return "Success"
 
 
+@app.route("/", methods=['POST'])
 def webhook():
     if request.method == 'POST':
         output = request.get_json()
