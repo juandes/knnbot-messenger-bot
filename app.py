@@ -1,10 +1,15 @@
 import numpy as np
 from knn import get_neighbors, get_majority_vote
+from pymessenger.bot import Bot
 
 import requests
 from flask import Flask, request
 
 app = Flask(__name__)
+
+ACCESS_TOKEN = "EAAQ6S6PAO1gBAHamMpU7BO9HtgqZAKCIur6ZAWV2x1Nx46fujEkdBshzSgPpXN9Sa1ZB9p9khLlZBZASL4V0977ZBbBhkyC5ZB8mwPO7nCchyfEugblQDdGqnteLlVOIQ5fNjLbI3gPwKvkW4NmWYnHooghnETnV02sERvX2EqfaAZDZD"
+VERIFY_TOKEN = "bot_verify"
+bot = Bot(ACCESS_TOKEN)
 
 
 def main():
@@ -35,9 +40,13 @@ def main():
                 print 'Predicted label=' + str(majority_vote) + ', Actual label=' + str(to_predict[x])
 
 
-@app.route('/')
+@app.route("/", methods=['GET', 'POST'])
 def landing():
-    return '352546976'
+    if request.method == 'GET':
+        if request.args.get("hub.verify_token") == VERIFY_TOKEN:
+            return request.args.get("hub.challenge")
+        else:
+            return 'Invalid verification token'
 
 if __name__ == '__main__':
     app.run(debug=True)
