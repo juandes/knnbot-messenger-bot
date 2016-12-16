@@ -82,12 +82,13 @@ def webhook():
                     recipient_id = x['sender']['id']
                     if x['message'].get('text'):
                         input = x['message'].get('text')
+                        input = name.split(',')
+                        if len(input) != 3:
+                            message = 'Wrong input'
+                            bot.send_text_message(recipient_id, message)
                         print('input: {}'.format(input))
                         message = x['message']['text']
                         bot.send_text_message(recipient_id, message)
-                    if x['message'].get('attachment'):
-                        bot.send_attachment_url(recipient_id, x['message']['attachment']['type'],
-                                                x['message']['attachment']['payload']['url'])
                 else:
                     pass
         return "Success"
