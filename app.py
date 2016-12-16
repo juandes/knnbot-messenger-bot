@@ -70,13 +70,17 @@ def webhook2():
                     pass
         return "Success"
 
+training_set = []
+
 
 @app.route("/", methods=['POST'])
 def webhook():
     if request.method == 'POST':
         output = request.get_json()
+        # for every event
         for event in output['entry']:
             messaging = event['messaging']
+            # for every messaging event
             for x in messaging:
                 if x.get('message'):
                     recipient_id = x['sender']['id']
@@ -86,6 +90,10 @@ def webhook():
                         if len(input) != 3:
                             message = 'Wrong input'
                             bot.send_text_message(recipient_id, message)
+                        else:
+                            training_input = (
+                                (int(input[0]), int(input[1])), int(input[2]))
+                            training_set.append(t)
                         print('input: {}'.format(input))
                         message = x['message']['text']
                         bot.send_text_message(recipient_id, message)
