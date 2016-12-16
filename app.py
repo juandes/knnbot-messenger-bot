@@ -81,8 +81,8 @@ def webhook():
                 if x.get('message'):
                     recipient_id = x['sender']['id']
                     if x['message'].get('text'):
-                        input = x['message'].get('text')
-                        input = name.split(',')
+                        raw_input = x['message'].get('text')
+                        input = raw_input.split(',')
                         if len(input) != 3:
                             message = 'Wrong input'
                             bot.send_text_message(recipient_id, message)
