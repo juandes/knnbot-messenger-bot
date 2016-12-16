@@ -93,7 +93,7 @@ def webhook():
                         else:
                             training_input = (
                                 (int(input[0]), int(input[1])), int(input[2]))
-                            training_set.append(t)
+                            training_set.append(training_input)
                         print('input: {}'.format(input))
                         message = x['message']['text']
                         bot.send_text_message(recipient_id, message)
