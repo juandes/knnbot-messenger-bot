@@ -77,6 +77,7 @@ training_set = []
 def webhook():
     if request.method == 'POST':
         output = request.get_json()
+        print(output)
         # for every event
         for event in output['entry']:
             messaging = event['messaging']
@@ -108,7 +109,7 @@ def webhook():
                                         'title': 'Yes',
                                         'payload': 'EXAMPLE_PAYLOAD'},
                                        {'type': 'postback',
-                                        'title': 'Yes',
+                                        'title': 'No',
                                         'payload': 'EXAMPLE_PAYLOAD'}]
                             bot.send_button_message(
                                 recipient_id, message, buttons)
