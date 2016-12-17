@@ -102,13 +102,16 @@ def webhook():
                         bot.send_text_message(recipient_id, message)
                         if len(training_set) >= k + 5:
                             print('hey')
-                            message = 'You have enough training data"  \
-                            "Would you like to use the KNN model?'
-                            buttons = {'type': 'postback',
-                                       'title': 'example',
-                                       'payload': 'EXAMPLE_PAYLOAD'}
+                            message = 'You have enough training data'  \
+                                'Would you like to use the KNN model?'
+                            buttons = [{'type': 'postback',
+                                        'title': 'Yes',
+                                        'payload': 'EXAMPLE_PAYLOAD'},
+                                       {'type': 'postback',
+                                        'title': 'Yes',
+                                        'payload': 'EXAMPLE_PAYLOAD'}]
                             bot.send_button_message(
-                                recipient_id, message, [buttons])
+                                recipient_id, message, buttons)
                         continue
                 else:
                     pass
