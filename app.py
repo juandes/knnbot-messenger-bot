@@ -92,12 +92,14 @@ def webhook():
                             bot.send_text_message(recipient_id, message)
                             continue
                         else:
+                            print(len(training_set))
                             training_input = (
                                 (int(input[0]), int(input[1])), int(input[2]))
                             training_set.append(training_input)
+                            print(len(training_set))
                             message = 'Input: {} accepted as training. Entry #{}'.format(
                                 input, len(training_set))
-                            #message = x['message']['text']
+                            print(message)
                             bot.send_text_message(recipient_id, message)
                             continue
                 else:
