@@ -51,8 +51,8 @@ def landing():
 def webhook2():
     predictions = []
     train = []
-        if request.method == 'GET':
-            print(request.args)
+    if request.method == 'GET':
+        print(request.args)
 
     if request.method == 'POST':
         output = request.get_json()
