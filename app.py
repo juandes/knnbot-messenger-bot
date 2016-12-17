@@ -58,7 +58,7 @@ def webhook():
 
     if request.method == 'POST':
         output = request.get_json()
-        print(output)
+        print("event received: {}".format(output))
         # for every event
         for event in output['entry']:
             messaging = event['messaging']
@@ -87,12 +87,12 @@ def webhook():
                             message = 'You have enough training data'  \
                                 'Would you like to use the KNN model?'
                             buttons = [{'type': 'postback',
-                                        'title': 'YesYes',
-                                        'payload': 'EXAMPLE_PAYLOAD'},
+                                        'title': 'Yes',
+                                        'payload': 'YES_USE_KNN'},
                                        {'type': 'postback',
-                                        'title': 'NoNo',
-                                        'payload': 'EXAMPLE_PAYLOAD'}]
-                            bot.send_button_message(
+                                        'title': 'No',
+                                        'payload': 'NO_USE_KNN'}]
+                            bot.send_(
                                 recipient_id, message, buttons)
                         continue
                 else:
