@@ -53,12 +53,12 @@ training_set = []
 @app.route("/", methods=['POST', 'GET'])
 def webhook():
     if request.method == 'GET':
-        print('GET')
+        print('GET received')
         print(request.args)
 
     if request.method == 'POST':
         output = request.get_json()
-        print("event received: {}".format(output))
+        print("POST received: {}".format(output))
         # for every event
         for event in output['entry']:
             messaging = event['messaging']
@@ -95,6 +95,8 @@ def webhook():
                             bot.send_button_message(
                                 recipient_id, message, buttons)
                         continue
+                elif x.get('postback'):
+                    pass
                 else:
                     pass
         return "Success"
