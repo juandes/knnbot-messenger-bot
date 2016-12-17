@@ -91,17 +91,24 @@ def webhook():
                             message = 'Wrong input'
                             bot.send_text_message(recipient_id, message)
                             continue
-                        else:
-                            print(len(training_set))
-                            training_input = (
-                                (int(input[0]), int(input[1])), int(input[2]))
-                            training_set.append(training_input)
-                            print(len(training_set))
-                            message = 'Input: {} accepted as training. Entry #{}'.format(
-                                input, len(training_set))
-                            print(message)
-                            bot.send_text_message(recipient_id, message)
-                            continue
+                        print(len(training_set))
+                        training_input = (
+                            (int(input[0]), int(input[1])), int(input[2]))
+                        training_set.append(training_input)
+                        print(len(training_set))
+                        message = 'Input: {} accepted as training. Entry #{}'.format(
+                            input, len(training_set))
+                        print(message)
+                        bot.send_text_message(recipient_id, message)
+                        if len(training_set) >= k + 5:
+                            message = 'You have enough training data"  \
+                            "Would you like to use the KNN model?'
+                            buttons = {'type': 'postback',
+                                       'title': 'example',
+                                       'payload': 'EXAMPLE_PAYLOAD'}
+                            bot.send_button_message(
+                                recipient_id, message, buttons)
+                        continue
                 else:
                     pass
         return "Success"
