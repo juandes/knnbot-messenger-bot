@@ -92,7 +92,7 @@ def webhook():
                                        {'type': 'postback',
                                         'title': 'No',
                                         'payload': 'NO_USE_KNN'}]
-                            bot.send_(
+                            bot.send_button_message(
                                 recipient_id, message, buttons)
                         continue
                 else:
