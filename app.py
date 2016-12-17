@@ -108,7 +108,7 @@ def webhook():
                                        'title': 'example',
                                        'payload': 'EXAMPLE_PAYLOAD'}
                             bot.send_button_message(
-                                recipient_id, message, buttons)
+                                recipient_id, message, [buttons])
                         continue
                 else:
                     pass
