@@ -47,29 +47,6 @@ def landing():
     return 'Hi.'
 
 
-@app.route("/a", methods=['GET', 'POST'])
-def webhook2():
-    predictions = []
-    train = []
-
-    if request.method == 'POST':
-        output = request.get_json()
-        for event in output['entry']:
-            messaging = event['messaging']
-            for x in messaging:
-                if x.get('message'):
-                    recipient_id = x['sender']['id']
-                    if x['message'].get('text'):
-                        input = x['message'].get('text')
-                        print('input: {}'.format(input))
-                        t = ((int(input[0]), int(input[1])), int(input[2]))
-                        bot.send_text_message(recipient_id, "input accepted")
-                        #message = x['message']['text']
-                        #bot.send_text_message(recipient_id, message)
-                else:
-                    pass
-        return "Success"
-
 training_set = []
 
 
@@ -110,10 +87,10 @@ def webhook():
                             message = 'You have enough training data'  \
                                 'Would you like to use the KNN model?'
                             buttons = [{'type': 'postback',
-                                        'title': 'Yes',
+                                        'title': 'YesYes',
                                         'payload': 'EXAMPLE_PAYLOAD'},
                                        {'type': 'postback',
-                                        'title': 'No',
+                                        'title': 'NoNo',
                                         'payload': 'EXAMPLE_PAYLOAD'}]
                             bot.send_button_message(
                                 recipient_id, message, buttons)
