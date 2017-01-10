@@ -64,7 +64,8 @@ def webhook():
             messaging = event['messaging']
             # for every messaging event
             for x in messaging:
-                # if a message event
+                # Check if it is a message event, by checking if the response contains
+                # the key 'message'
                 if x.get('message'):
                     recipient_id = x['sender']['id']
                     if x['message'].get('text'):
@@ -98,7 +99,8 @@ def webhook():
                         continue
                 # if a postback event
                 elif x.get('postback'):
-                    print ('it was postback')
+                    payload = x['postback'].get('payload')
+                    bot.send_text_message(recipient_id, payload)
                     pass
                 else:
                     pass
