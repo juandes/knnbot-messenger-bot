@@ -99,6 +99,7 @@ def webhook():
                         continue
                 # if a postback event
                 elif x.get('postback'):
+                    recipient_id = x['sender']['id']
                     payload = x['postback'].get('payload')
                     bot.send_text_message(recipient_id, payload)
                     pass
