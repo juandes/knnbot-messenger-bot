@@ -65,6 +65,7 @@ def webhook():
                     recipient_id = x['sender']['id']
                     a.append(1)
                     bot.send_text_message(recipient_id, len(a))
+    return 'Success'
 
 
 @app.route("/2", methods=['POST', 'GET'])
