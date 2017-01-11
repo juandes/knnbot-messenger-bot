@@ -77,7 +77,7 @@ def webhook():
                             message = 'Wrong input'
                             bot.send_text_message(recipient_id, message)
                             continue
-                        print(len(train[recipient_id]))
+                        print(train)
                         training_input = (
                             (int(input[0]), int(input[1])), int(input[2]))
                         train[recipient_id].append(training_input)
