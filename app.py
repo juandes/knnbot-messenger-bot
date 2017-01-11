@@ -99,7 +99,6 @@ def webhook():
                                         'payload': 'NO_USE_KNN'}]
                             bot.send_button_message(
                                 recipient_id, message, buttons)
-                            bot.
                         continue
                 # if a postback event
                 elif x.get('postback'):
