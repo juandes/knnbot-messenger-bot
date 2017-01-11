@@ -25,7 +25,7 @@ def webhook():
                 if x.get('message'):
                     recipient_id = x['sender']['id']
                     a[recipient_id].append(1)
-                    bot.send_text_message(recipient_id, len(a))
+                    bot.send_text_message(recipient_id, len(a[recipient_id]))
     return 'Success'
 
 
