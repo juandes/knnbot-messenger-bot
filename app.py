@@ -1,5 +1,6 @@
 import os
 from pymessenger.bot import Bot
+from collections import defaultdict
 
 import requests
 from flask import Flask, request
@@ -11,7 +12,7 @@ VERIFY_TOKEN = "bot_verify"
 bot = Bot(ACCESS_TOKEN)
 
 
-a = []
+a = defaultdict(list)
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -23,7 +24,7 @@ def webhook():
             for x in messaging:
                 if x.get('message'):
                     recipient_id = x['sender']['id']
-                    a.append(1)
+                    a[recipient_id].append(1)
                     bot.send_text_message(recipient_id, len(a))
     return 'Success'
 
