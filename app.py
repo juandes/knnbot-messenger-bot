@@ -2,6 +2,7 @@ import numpy as np
 import os
 from knn import get_neighbors, get_majority_vote
 from pymessenger.bot import Bot
+from collections import defaultdict
 
 import requests
 from flask import Flask, request
@@ -48,6 +49,7 @@ def landing():
 
 
 training_set = []
+train = defaultdict(list)
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -75,16 +77,17 @@ def webhook():
                             message = 'Wrong input'
                             bot.send_text_message(recipient_id, message)
                             continue
-                        print(len(training_set))
+                        print(len(train[recipient_id]))
                         training_input = (
                             (int(input[0]), int(input[1])), int(input[2]))
-                        training_set.append(training_input)
-                        print(len(training_set))
+                        train[recipient_id].append(training_input)
+                        # training_set.append(training_input)
+                        print(len(train[recipient_id]))
                         message = 'Input: {} accepted as training. Entry #{}'.format(
-                            input, len(training_set))
+                            input, len(train[recipient_id]))
                         print(message)
                         bot.send_text_message(recipient_id, message)
-                        if len(training_set) >= k + 5:
+                        if len(train[recipient_id]) >= k + 5:
                             print('hey')
                             message = 'You have enough training data'  \
                                 'Would you like to use the KNN model?'
@@ -96,6 +99,7 @@ def webhook():
                                         'payload': 'NO_USE_KNN'}]
                             bot.send_button_message(
                                 recipient_id, message, buttons)
+                            bot.
                         continue
                 # if a postback event
                 elif x.get('postback'):
