@@ -1,8 +1,9 @@
+import numpy as np
 import os
+from knn import get_neighbors, get_majority_vote
 from pymessenger.bot import Bot
 from collections import defaultdict
 
-import json
 import requests
 from flask import Flask, request
 
@@ -12,69 +13,49 @@ ACCESS_TOKEN = os.environ.get('PAGE_ACCESS_TOKEN')
 VERIFY_TOKEN = "bot_verify"
 bot = Bot(ACCESS_TOKEN)
 
+k = 3
 
-a = defaultdict(list)
+
+def main():
+    predictions = []
+    train = []
+
+    while True:
+        name = raw_input("input: ")
+        input = name.split(',')
+        t = ((int(input[0]), int(input[1])), int(input[2]))
+        train.append(t)
+
+        if len(train) > k + 0:
+            train_to_fit = np.array(train)
+
+            name = raw_input("Input to predict: ")   # Python 2.x
+            input = name.split(',')
+            to_predict = [(int(input[0]), int(input[1]))]
+            to_predict = np.array(to_predict)
+
+            # for each testing instance
+            for x in range(len(to_predict)):
+                neighbors = get_neighbors(
+                    training_set=train_to_fit, test_instance=to_predict[x], k=k)
+                majority_vote = get_majority_vote(neighbors)
+                predictions.append(majority_vote)
+                print 'Predicted label=' + str(majority_vote) + ', Actual label=' + str(to_predict[x])
 
 
-@app.route('/', methods=['POST'])
+@app.route("/")
+def landing():
+    return 'Hi.'
+
+
+training_set = []
+train = defaultdict(list)
+
+a = []
+
+
+@app.route("/", methods=['POST', 'GET'])
 def webhook():
-
-    # endpoint for processing incoming messaging events
-
-    data = request.get_json()
-
-    if data["object"] == "page":
-
-        for entry in data["entry"]:
-            for messaging_event in entry["messaging"]:
-
-                if messaging_event.get("message"):  # someone sent us a message
-
-                    # the facebook ID of the person sending you the message
-                    sender_id = messaging_event["sender"]["id"]
-                    # the recipient's ID, which should be your page's facebook
-                    # ID
-                    recipient_id = messaging_event["recipient"]["id"]
-                    message_text = messaging_event["message"][
-                        "text"]  # the message's text
-                    a[recipient_id].append(1)
-                    send_message(sender_id, len(a[recipient_id]))
-
-                if messaging_event.get("delivery"):  # delivery confirmation
-                    pass
-
-                if messaging_event.get("optin"):  # optin confirmation
-                    pass
-
-                # user clicked/tapped "postback" button in earlier message
-                if messaging_event.get("postback"):
-                    pass
-
-    return "ok", 200
-
-
-def send_message(recipient_id, message_text):
-
-    params = {
-        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
-    }
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": message_text
-        }
-    })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages",
-                      params=params, headers=headers, data=data)
-
-
-@app.route("/2", methods=['POST', 'GET'])
-def webhook2():
     if request.method == 'POST':
         output = request.get_json()
         for event in output['entry']:
@@ -82,9 +63,67 @@ def webhook2():
             for x in messaging:
                 if x.get('message'):
                     recipient_id = x['sender']['id']
-                    a[recipient_id].append(1)
-                    bot.send_text_message(recipient_id, len(a[recipient_id]))
+                    a.append(1)
+                    bot.send_text_message(recipient_id, len(a))
     return 'Success'
+
+
+@app.route("/2", methods=['POST', 'GET'])
+def webhook2():
+    if request.method == 'GET':
+        print('GET received')
+        print(request.args)
+
+    if request.method == 'POST':
+        output = request.get_json()
+        print("POST received: {}".format(output))
+        # for every event
+        for event in output['entry']:
+            messaging = event['messaging']
+            # for every messaging event
+            for x in messaging:
+                # Check if it is a message event, by checking if the response contains
+                # the key 'message'
+                if x.get('message'):
+                    recipient_id = x['sender']['id']
+                    if x['message'].get('text'):
+                        raw_input = x['message'].get('text')
+                        input = raw_input.split(',')
+                        if len(input) != 3:
+                            message = 'Wrong input'
+                            bot.send_text_message(recipient_id, message)
+                            continue
+                        print(train)
+                        training_input = (
+                            (int(input[0]), int(input[1])), int(input[2]))
+                        train[recipient_id].append(training_input)
+                        # training_set.append(training_input)
+                        print(len(train[recipient_id]))
+                        message = 'Input: {} accepted as training. Entry #{}'.format(
+                            input, len(train[recipient_id]))
+                        print(message)
+                        bot.send_text_message(recipient_id, message)
+                        if len(train[recipient_id]) >= k + 5:
+                            message = 'You have enough training data'  \
+                                'Would you like to use the KNN model?'
+                            buttons = [{'type': 'postback',
+                                        'title': 'Yes',
+                                        'payload': 'YES_USE_KNN'},
+                                       {'type': 'postback',
+                                        'title': 'No',
+                                        'payload': 'NO_USE_KNN'}]
+                            bot.send_button_message(
+                                recipient_id, message, buttons)
+                        continue
+                # if a postback event
+                elif x.get('postback'):
+                    recipient_id = x['sender']['id']
+                    payload = x['postback'].get('payload')
+                    bot.send_text_message(recipient_id, payload)
+                    pass
+                else:
+                    pass
+        return "Success"
 
 
 if __name__ == '__main__':
