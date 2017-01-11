@@ -2,6 +2,7 @@ import os
 from pymessenger.bot import Bot
 from collections import defaultdict
 
+import json
 import requests
 from flask import Flask, request
 
