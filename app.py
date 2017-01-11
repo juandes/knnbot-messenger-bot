@@ -51,9 +51,22 @@ def landing():
 training_set = []
 train = defaultdict(list)
 
+a = []
+
 
 @app.route("/", methods=['POST', 'GET'])
 def webhook():
+    if request.method == 'POST':
+        output = request.get_json()
+        for event in output['entry']:
+            if x.get('message'):
+                recipient_id = x['sender']['id']
+                a.append(1)
+                bot.send_text_message(recipient_id, len(a))
+
+
+@app.route("/2", methods=['POST', 'GET'])
+def webhook2():
     if request.method == 'GET':
         print('GET received')
         print(request.args)
@@ -88,7 +101,6 @@ def webhook():
                         print(message)
                         bot.send_text_message(recipient_id, message)
                         if len(train[recipient_id]) >= k + 5:
-                            print('hey')
                             message = 'You have enough training data'  \
                                 'Would you like to use the KNN model?'
                             buttons = [{'type': 'postback',
