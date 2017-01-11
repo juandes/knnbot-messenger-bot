@@ -59,10 +59,12 @@ def webhook():
     if request.method == 'POST':
         output = request.get_json()
         for event in output['entry']:
-            if x.get('message'):
-                recipient_id = x['sender']['id']
-                a.append(1)
-                bot.send_text_message(recipient_id, len(a))
+            messaging = event['messaging']
+            for x in messaging:
+                if x.get('message'):
+                    recipient_id = x['sender']['id']
+                    a.append(1)
+                    bot.send_text_message(recipient_id, len(a))
 
 
 @app.route("/2", methods=['POST', 'GET'])
