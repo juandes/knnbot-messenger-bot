@@ -26,47 +26,49 @@ def verify():
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
 
-    return "Hello world", 200
-
-
-def main():
-    predictions = []
-    train = []
-
-    while True:
-        name = raw_input("input: ")
-        input = name.split(',')
-        t = ((int(input[0]), int(input[1])), int(input[2]))
-        train.append(t)
-
-        if len(train) > k + 0:
-            train_to_fit = np.array(train)
-
-            name = raw_input("Input to predict: ")   # Python 2.x
-            input = name.split(',')
-            to_predict = [(int(input[0]), int(input[1]))]
-            to_predict = np.array(to_predict)
-
-            # for each testing instance
-            for x in range(len(to_predict)):
-                neighbors = get_neighbors(
-                    training_set=train_to_fit, test_instance=to_predict[x], k=k)
-                majority_vote = get_majority_vote(neighbors)
-                predictions.append(majority_vote)
-                print 'Predicted label=' + str(majority_vote) + ', Actual label=' + str(to_predict[x])
-
-
-@app.route("/")
-def landing():
-    return 'Hi.'
+    return "Hi", 200
 
 
 training_set = []
 train = defaultdict(list)
 
 a = []
+TRAINING_STATE = 0
 PREDICT_STATE = 1
 user_state = {}
+
+
+def performPrediction(recipient_id, input):
+    if len(input) != 2:
+        message = "Wrong input on prediction"
+        bot.send_text_message(recipient_id, message)
+        return
+
+    train_to_fit = np.array(train[recipient_id])
+    to_predict = [(int(input[0]), int(input[1]))]
+    to_predict = np.array(to_predict)
+
+    neighbors = get_neighbors(
+        training_set=train_to_fit, test_instance=to_predict[0], k=k)
+    majority_vote = get_majority_vote(neighbors)
+    print 'Predicted label=' + str(majority_vote)
+
+    message = "Predicted label {}".format(str(majority_vote))
+    bot.send_text_message(recipient_id, message)
+
+
+def modifyUserState(recipient_id, state):
+    user_state[recipient_id] = state
+
+
+def validateInput(raw_input, recipient_id, state):
+    if state == PREDICT_STATE:
+        input = raw_input.split(',')
+        if len(input) == 3:
+            return True
+
+    bot.send_text_message(recipient_id, "Wrong input")
+    return False
 
 
 @app.route("/2", methods=['POST'])
@@ -85,73 +87,71 @@ def webhook2():
 
 @app.route("/", methods=['POST'])
 def webhook():
-    if request.method == 'POST':
-        output = request.get_json()
-        print("POST received: {}".format(output))
-        # for every event
-        for event in output['entry']:
-            messaging = event['messaging']
-            # for every messaging event
-            for x in messaging:
-                # Check if it is a message event, by checking if the response contains
-                # the key 'message'
-                if x.get('message'):
-                    recipient_id = x['sender']['id']
-                    if x['message'].get('text'):
-                        raw_input = x['message'].get('text')
-                        input = raw_input.split(',')
-                        if user_state.get(recipient_id) == PREDICT_STATE:
-                            train_to_fit = np.array(train[recipient_id])
-                            to_predict = [(int(input[0]), int(input[1]))]
-                            to_predict = np.array(to_predict)
 
-                            neighbors = get_neighbors(
-                                training_set=train_to_fit, test_instance=to_predict[0], k=k)
-                            majority_vote = get_majority_vote(neighbors)
-                            print 'Predicted label=' + str(majority_vote)
-                            message = "Predicted label {}".format(
-                                str(majority_vote))
-                            bot.send_text_message(recipient_id, message)
-                            continue
-                        if len(input) != 3:
-                            message = 'Wrong input'
-                            bot.send_text_message(recipient_id, message)
-                            continue
-                        print(train)
-                        training_input = (
-                            (int(input[0]), int(input[1])), int(input[2]))
-                        train[recipient_id].append(training_input)
-                        print(len(train[recipient_id]))
-                        message = 'Input: {} accepted as training. Entry #{}'.format(
-                            input, len(train[recipient_id]))
-                        print(message)
-                        bot.send_text_message(recipient_id, message)
-                        if len(train[recipient_id]) >= k + 5:
-                            message = 'You have enough training data'  \
-                                'Would you like to use the KNN model?'
-                            buttons = [{'type': 'postback',
-                                        'title': 'Yes',
-                                        'payload': 'YES_USE_KNN'},
-                                       {'type': 'postback',
-                                        'title': 'No',
-                                        'payload': 'NO_USE_KNN'}]
-                            bot.send_button_message(
-                                recipient_id, message, buttons)
+    output = request.get_json()
+    print("POST: {}".format(output))
+    # for every event
+    for event in output['entry']:
+        messaging = event['messaging']
+        # for every messaging event
+        for x in messaging:
+            recipient_id = x['sender']['id']
+            # Continue if the recipient_id is empty
+            if recipient_id == "":
+                continue
+
+            # If the user does not have any state, assign it to the default
+            if user_state.get(recipient_id) is None:
+                modifyUserState(recipient_id, TRAINING_STATE)
+
+            # Check if it is a message event, by checking if the response
+            # contains the key 'message'
+            if x.get('message'):
+                if x['message'].get('text'):
+                    raw_input = x['message'].get('text')
+                    input = raw_input.split(',')
+                    if user_state.get(recipient_id) == PREDICT_STATE:
+                        performPrediction(recipient_id, input)
                         continue
-                # if a postback event
-                elif x.get('postback'):
-                    recipient_id = x['sender']['id']
-                    payload = x['postback'].get('payload')
-                    if payload == 'YES_USE_KNN':
-                        user_state[recipient_id] = PREDICT_STATE
-                        bot.send_text_message(
-                            recipient_id, "Enter example to predict")
-                    pass
-                else:
-                    pass
-        return "Success"
+
+                    if len(input) != 3:
+                        message = 'Wrong input'
+                        bot.send_text_message(recipient_id, message)
+                        continue
+
+                    training_input = (
+                        (int(input[0]), int(input[1])), int(input[2]))
+                    train[recipient_id].append(training_input)
+
+                    message = 'Input: {} accepted as training. Entry #{}'.format(
+                        input, len(train[recipient_id]))
+
+                    bot.send_text_message(recipient_id, message)
+
+                    if len(train[recipient_id]) >= k + 5:
+                        message = 'You have enough training data'  \
+                            'Would you like to use the KNN model?'
+
+                        buttons = [{'type': 'postback',
+                                    'title': 'Yes',
+                                    'payload': 'YES_USE_KNN'},
+                                   {'type': 'postback',
+                                    'title': 'No',
+                                    'payload': 'NO_USE_KNN'}]
+                        bot.send_button_message(recipient_id, message, buttons)
+                    continue
+            # if a postback event
+            elif x.get('postback'):
+                payload = x['postback'].get('payload')
+                if payload == 'YES_USE_KNN':
+                    user_state[recipient_id] = PREDICT_STATE
+                    bot.send_text_message(
+                        recipient_id, "Enter example to predict")
+                pass
+            else:
+                pass
+    return "Success"
 
 
 if __name__ == '__main__':
-    print('token ' + os.environ.get('ACCESS_TOKEN'))
     app.run(debug=True)
