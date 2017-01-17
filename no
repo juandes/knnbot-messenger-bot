@@ -38,15 +38,14 @@ PREDICT_STATE = 1
 user_state = {}
 
 
-def performPrediction(recipient_id, raw_input):
-    input = raw_input.split(',')
-    if len(input) != 2:
+def performPrediction(recipient_id, input):
+    train_to_fit = np.array(train[recipient_id])
+    to_predict = [(int(input[0]), int(input[1]))]
+    print(input)
+    if len(to_predict) != 2:
         message = "Wrong input on prediction"
         bot.send_text_message(recipient_id, message)
         return
-
-    train_to_fit = np.array(train[recipient_id])
-    to_predict = [(int(input[0]), int(input[1]))]
     to_predict = np.array(to_predict)
 
     neighbors = get_neighbors(
@@ -62,7 +61,7 @@ def modifyUserState(recipient_id, state):
     user_state[recipient_id] = state
 
 
-def validateInput(recipient_id, raw_input, state):
+def validateInput(raw_input, recipient_id, state):
     if state == PREDICT_STATE:
         input = raw_input.split(',')
         if len(input) == 3:
@@ -70,24 +69,6 @@ def validateInput(recipient_id, raw_input, state):
 
     bot.send_text_message(recipient_id, "Wrong input")
     return False
-
-
-def addToTraining(recipient_id, raw_input):
-    return
-
-
-@app.route("/2", methods=['POST'])
-def webhook2():
-    if request.method == 'POST':
-        output = request.get_json()
-        for event in output['entry']:
-            messaging = event['messaging']
-            for x in messaging:
-                if x.get('message'):
-                    recipient_id = x['sender']['id']
-                    a.append(1)
-                    bot.send_text_message(recipient_id, len(a))
-    return 'Success'
 
 
 @app.route("/", methods=['POST'])
@@ -115,12 +96,11 @@ def webhook():
                 if x['message'].get('text'):
                     raw_input = x['message'].get('text')
                     input = raw_input.split(',')
-                    # if user_state.get(recipient_id) == TRAINING_STATE:
-
                     if user_state.get(recipient_id) == PREDICT_STATE:
-                        performPrediction(recipient_id, raw_input)
+                        performPrediction(recipient_id, input)
                         continue
 
+                    print(input)
                     if len(input) != 3:
                         message = 'Wrong input'
                         bot.send_text_message(recipient_id, message)
