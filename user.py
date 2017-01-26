@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 class user(object):
 
     def __init__(self, recipient_id, state):
@@ -33,3 +36,11 @@ class user(object):
         for key, value in self.training_classes_count.iteritems():
             message += "Class: {}. Number of examples: {}\n".format(key, value)
         return message
+
+    def generate_knn_plot(self):
+        x = [int(i[0][0]) for i in self.training_set]
+        y = [int(i[0][1]) for i in self.training_set]
+        label = [int(i[1]) for i in self.training_set]
+
+        plt.scatter(x, y, c=label)
+        plt.savefig(self.recipient_id + '.png')

@@ -2,6 +2,7 @@ import numpy as np
 import os
 import messages
 import bot_functions
+import matplotlib.pyplot as plt
 from user import user
 from knn import get_neighbors, get_majority_vote
 from pymessenger.bot import Bot
@@ -83,6 +84,19 @@ def webhook():
                 elif payload == 'TRAINING_CLASSES':
                     bot.send_text_message(recipient_id, users[
                         recipient_id].get_training_classes())
+                elif payload == 'SHOW_KNN':
+
+                    users[recipient_id].generate_knn_plot()
+                    elements = []
+                    element = {
+                        'title': 'test'}
+
+                    elements.append(element)
+
+                    bot.send_generic_message(recipient_id, elements)
+                    bot.send_image(
+                        recipient_id, recipient_id + '.png')
+                    bot.send_text_message(recipient_id, recipient_id + '.png')
             else:
                 pass
     return "Success"
@@ -146,7 +160,9 @@ def show_status(recipient_id):
                                                                    k, users[recipient_id].get_state())
 
     buttons = [bot_functions.create_button(
-        'postback', 'Training Classes', 'TRAINING_CLASSES')]
+        'postback', 'Training Classes', 'TRAINING_CLASSES'),
+        bot_functions.create_button(
+        'postback', 'Show KNN', 'SHOW_KNN')]
     bot.send_button_message(recipient_id, message, buttons)
 
 
