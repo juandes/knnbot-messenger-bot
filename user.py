@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 class user(object):
@@ -43,4 +44,8 @@ class user(object):
         label = [int(i[1]) for i in self.training_set]
 
         plt.scatter(x, y, c=label)
-        plt.savefig(self.recipient_id + '.png')
+        plt.savefig(self.recipient_id + '.png', format='png')
+        # Convert the image to JPEG, because of the problem trying to
+        # send an PNG image to the bot
+        Image.open(self.recipient_id +
+                   '.png').save(self.recipient_id + '.jpg', 'JPEG')

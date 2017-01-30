@@ -3,6 +3,8 @@ import os
 import messages
 import bot_functions
 import matplotlib.pyplot as plt
+import requests
+import subprocess
 from user import user
 from knn import get_neighbors, get_majority_vote
 from pymessenger.bot import Bot
@@ -13,13 +15,16 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+# Bot related
 ACCESS_TOKEN = os.environ.get('PAGE_ACCESS_TOKEN')
 VERIFY_TOKEN = os.environ.get('VERIFY_TOKEN')
 bot = Bot(ACCESS_TOKEN)
 
+# k of KNN
 k = 3
-users = defaultdict(user)
 
+# User dict and states
+users = defaultdict(user)
 TRAINING_STATE = 0
 PREDICT_STATE = 1
 
@@ -85,18 +90,15 @@ def webhook():
                     bot.send_text_message(recipient_id, users[
                         recipient_id].get_training_classes())
                 elif payload == 'SHOW_KNN':
-
                     users[recipient_id].generate_knn_plot()
-                    elements = []
-                    element = {
-                        'title': 'test'}
-
-                    elements.append(element)
-
-                    bot.send_generic_message(recipient_id, elements)
-                    bot.send_image(
-                        recipient_id, recipient_id + '.png')
-                    bot.send_text_message(recipient_id, recipient_id + '.png')
+                    subprocess.call(["curl",
+                                     "-F",
+                                     "recipient={\"id\":\"" +
+                                     str(recipient_id) + "\"}",
+                                     "-F", "message={\"attachment\":{\"type\":\"image\", \"payload\":{}}}",
+                                     "-F", "filedata=@{}.jpg".format(
+                                         recipient_id),
+                                     "https://graph.facebook.com/v2.6/me/messages?access_token={}".format(ACCESS_TOKEN)], shell=False)
             else:
                 pass
     return "Success"
@@ -104,12 +106,15 @@ def webhook():
 
 def perform_prediction(recipient_id, raw_input):
     input = raw_input.split(',')
+    # Check of the input if of shape (x,y)
     if len(input) != 2:
         message = "Wrong input on prediction"
         bot.send_text_message(recipient_id, message)
         return
 
+    # Get the user's training set
     train_to_fit = np.array(users[recipient_id].training_set)
+    # Convert the input to predict into the right format
     to_predict = [int(input[0]), int(input[1])]
 
     neighbors = get_neighbors(
@@ -125,20 +130,21 @@ def modify_user_state(recipient_id, state):
     users[recipient_id].state = state
 
 
+# Add a new training input to the training list
 def add_to_training(recipient_id, raw_input):
     input = raw_input.split(',')
-
     if len(input) != 3:
         bot.send_text_message(
             recipient_id, messages.wrong_input)
         return
 
+    # Each training example is of the shape((x,y), label)
     training_input = ((int(input[0]), int(input[1])), int(input[2]))
     users[recipient_id].add_training_example(training_input)
 
+    # Send a message to the user stating that the input was accepted
     message = messages.training_input_accepted.format(
         input, users[recipient_id].training_set_length())
-
     bot.send_text_message(recipient_id, message)
 
 
