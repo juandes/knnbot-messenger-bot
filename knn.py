@@ -21,10 +21,9 @@ def _get_tuple_distance(training_instance, test_instance):
     return (training_instance, distance(test_instance, training_instance[0]))
 
 
-# 3) given an array of nearest neighbours for a test case, tally up their
-# classes to vote on test case class
+# Given an array of the nearest neighbors, get the most common label
 def get_majority_vote(neighbors):
-    # index 1 is the class
+    # Index 1 represents the label
     classes = [neighbor[1] for neighbor in neighbors]
     count = Counter(classes)
     return count.most_common()[0][0]
