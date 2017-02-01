@@ -5,12 +5,11 @@ import bot_functions
 import matplotlib.pyplot as plt
 import requests
 import subprocess
+
 from user import user
 from knn import get_neighbors, get_majority_vote
 from pymessenger.bot import Bot
 from collections import defaultdict
-
-import requests
 from flask import Flask, request
 
 app = Flask(__name__)
