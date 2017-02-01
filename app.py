@@ -91,6 +91,9 @@ def webhook():
                         recipient_id].get_training_classes())
                 elif payload == 'SHOW_KNN':
                     users[recipient_id].generate_knn_plot()
+                    # The send_image function of the library was giving some
+                    # problems, so instead, I'm using a curl command
+                    # to upload the image.
                     subprocess.call(["curl",
                                      "-F",
                                      "recipient={\"id\":\"" +

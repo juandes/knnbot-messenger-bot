@@ -33,9 +33,8 @@ def predict(train, data, k):
     distances = [_get_tuple_distance(
         train, data) for training_instance in train]
     # index 1 is the calculated distance between training_instance and
-    # test_instance
     sorted_distances = sorted(distances, key=itemgetter(1))
     # extract only training instances
     sorted_training_instances = [tuple[0] for tuple in sorted_distances]
-    # select first k elements
+    # Select the first K elements
     return sorted_training_instances[:k]
