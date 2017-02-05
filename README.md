@@ -13,13 +13,13 @@ Knnbot is a Facebook Messenger bot written in Python, capable of training a mach
 With `pip` run `pip install -r requirements.txt`
 
 ## Regarding the algorithm
-For simplicity purposes the bot just accepts feature vectors of **two** dimensions. This could be easily changed by just modifying the input validation in the function 'add_to_training'
+For simplicity purposes the bot just accepts feature vectors of **two** dimensions. This could be easily changed by just modifying the input validation in the function `add_to_training`
 
 The algorithm itself has no limitations regarding this.
 
 
 ## Features
-The bot accepts the command 'status' which will print the number of training examples the user has inputted, the K, and the state in which the bot is currently at, which is either 'training' if the user is training the system, or 'predict' is the user has enough training examples.
+The bot accepts the command `status` which will print the number of training examples the user has inputted, the K, and the state in which the bot is currently at, which is either **training** if the user is training the system, or **predict** is the user has enough training examples.
 
 Also, there will be two buttons: training classes, and show knn. The first one will show all the different classes seen during training and the number of cases associated with that label. The second button will display a 2D scatterplot of the training examples which each data point colored depending on its class.
 
