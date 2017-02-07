@@ -43,7 +43,18 @@ class user(object):
         y = [int(i[0][1]) for i in self.training_set]
         label = [int(i[1]) for i in self.training_set]
 
-        plt.scatter(x, y, c=label)
+        unique = list(set(label))
+        colors = [plt.cm.jet(float(i) / max(unique)) for i in unique]
+        for i, u in enumerate(unique):
+            xi = [x[j] for j in range(len(x)) if label[j] == u]
+            yi = [y[j] for j in range(len(x)) if label[j] == u]
+            plt.scatter(xi, yi, c=colors[i], label=str(u))
+
+        plt.title("Training data set")
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+
         plt.savefig(self.recipient_id + '.png', format='png')
         # Convert the image to JPEG, because of the problem trying to
         # send an PNG image to the bot
