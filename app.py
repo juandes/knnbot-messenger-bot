@@ -69,6 +69,17 @@ def webhook():
 
                     if raw_input == 'status':
                         show_status(recipient_id)
+                    elif raw_input == 'train' or raw_input == 'training':
+                        modify_user_state(recipient_id, TRAINING_STATE)
+                        bot.send_text_message(recipient_id, "TRAINING state")
+                    elif raw_input == 'predict':
+                        if users[recipient_id].training_set_length() >= k:
+                            modify_user_state(recipient_id, PREDICT_STATE)
+                            bot.send_text_message(
+                                recipient_id, "PREDICT state")
+                        else:
+                            bot.send_text_message(
+                                recipient_id, "Not enough training examples")
                     elif users[recipient_id].state == TRAINING_STATE:
                         add_to_training(recipient_id, raw_input)
                         check_if_enough_training(recipient_id)
