@@ -6,14 +6,14 @@ Knnbot is a Facebook Messenger bot written in Python, capable of training a mach
 - Flask==0.11.1
 - requests==2.10.0
 - numpy==1.11.1
-- pymessenger==0.0.7.0
+- pymessenger==0.0.7.0 [PyMessenger](https://github.com/davidchua/pymessenger)
 - pillow==3.1.1
 - matplotlib==1.5.3
 
 With `pip` run `pip install -r requirements.txt`
 
 ## Regarding the algorithm
-For simplicity purposes the bot just accepts feature vectors of **two** dimensions. This could be easily changed by just modifying the input validation in the function `add_to_training`
+For simplicity purposes the bot just accepts feature vectors of **two** dimensions whose features are **integers**. This could be easily changed by just modifying the input validation in the function `add_to_training`
 
 The algorithm itself has no limitations regarding this.
 
@@ -25,4 +25,11 @@ Also, there will be two buttons: training classes, and show knn. The first one w
 
 
 ## Instructions
-Coming soon
+At start, Knnbot will in the **training** state. During this state the user have to input a feature vector made of two integers, and the class or label, which should
+also be an integer. For example `10,5,2` is a feature vector `[10,5]` with class `2`.
+
+Once the user has **3** or more training examples, Knnbot will ask you if you which to test the system. If the answer is yes,
+then Knnbot will be in **predict** state. While in this state, Knnbot will predict the class of your input which should be of the form
+`x,y` where `x` and `y` are **integers**; this input is the feature vector.
+
+To switch back to the **training** or **predict** state, type the command `train` or `predict`.
