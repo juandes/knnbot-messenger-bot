@@ -6,7 +6,7 @@ Knnbot is a Facebook Messenger bot written in Python, capable of training a mach
 - Flask==0.11.1
 - requests==2.10.0
 - numpy==1.11.1
-- pymessenger==0.0.7.0 [PyMessenger](https://github.com/davidchua/pymessenger)
+- pymessenger==0.0.7.0 ([PyMessenger](https://github.com/davidchua/pymessenger))
 - pillow==3.1.1
 - matplotlib==1.5.3
 
@@ -21,7 +21,21 @@ The algorithm itself has no limitations regarding this.
 ## Features
 The bot accepts the command `status` which will print the number of training examples the user has inputted, the K, and the state in which the bot is currently at, which is either **training** if the user is training the system, or **predict** is the user has enough training examples.
 
+
 Also, there will be two buttons: training classes, and show knn. The first one will show all the different classes seen during training and the number of cases associated with that label. The second button will display a 2D scatterplot of the training examples which each data point colored depending on its class.
+
+
+![Status](example_images/status.png)
+
+Status button
+
+![Classes](example_images/trainingclasses.png)
+
+Different classes and their frequencies
+
+<img src="example_images/knnplot.jpg" width="450" height="450">
+
+Plot of how the KNN model looks
 
 
 ## Instructions
@@ -31,5 +45,7 @@ also be an integer. For example `10,5,2` is a feature vector `[10,5]` with class
 Once the user has **3** or more training examples, Knnbot will ask you if you which to test the system. If the answer is yes,
 then Knnbot will be in **predict** state. While in this state, Knnbot will predict the class of your input which should be of the form
 `x,y` where `x` and `y` are **integers**; this input is the feature vector.
+
+![Predict](example_images/predict.png)
 
 To switch back to the **training** or **predict** state, type the command `train` or `predict`.
