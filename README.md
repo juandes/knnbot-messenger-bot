@@ -49,3 +49,15 @@ then Knnbot will be in **predict** state. While in this state, Knnbot will predi
 ![Predict](example_images/predict.png)
 
 To switch back to the **training** or **predict** state, type the command `train` or `predict`.
+
+To recap, these are all the commands.
+During **TRAINING** state:
+-  To create a new training example, create a new feature vector of the shape `x,y,z` where `x` and `y` are the features, and `z` is the class.
+During **TEST** state:
+- To test the system, write a feature vector of the shape `x,z` where `x` and `y` are the features.
+
+During any state:
+- `status` to see several information regarding the training
+- `train` to enter the training state
+- `test` to enter the testing state (if the bot has more than K training examples).
+
